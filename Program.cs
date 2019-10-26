@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using WebScrapingRobot.Model;
+using WebScrapingRobot.Repository;
 
 namespace WebScrapingRobot
 {
@@ -32,21 +33,29 @@ namespace WebScrapingRobot
             var lastPage = pagina.GetLastPage();
             if(lastPage > 0)
             {
-                List<Post> posts = new List<Post>();
-                for (int i = 1; i <= lastPage; i++)
-                {
-                    
-                    pagina.MudarPagina(i);
-
-                    for (int j = 0; j < 100; j++)
-                    {
-                        posts.Add(pagina.GetPost(j));
-
-                    }
-                }
+                LerPagina(pagina, lastPage);
             }
 
             pagina.Fechar();
+        }
+
+        private static void LerPagina(PaginaFBO pagina, int lastPage)
+        {
+            var postRepository = new PostRepository();
+            
+            for (int i = 1; i <= lastPage; i++)
+            {
+                List<Post> posts = new List<Post>();
+                pagina.MudarPagina(i);
+
+                for (int j = 0; j < 100; j++)
+                {
+                    var post = pagina.GetPost(j);
+                    posts.Add(post);
+                }
+
+                postRepository.AddRange(posts);
+            }
         }
     }
 }

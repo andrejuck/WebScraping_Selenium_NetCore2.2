@@ -70,17 +70,10 @@ namespace WebScrapingRobot
                 switch (item.GetAttribute("headers"))
                 {
                     case "lh_id":
-                        opportunity.Name = item.FindElement(By.ClassName("solt")).Text;
-                        opportunity.SolicitationNumber = item.FindElement(By.ClassName("soln")).Text;
-                        opportunity.Category = item.FindElement(By.ClassName("solcc")).Text;
+                        GetOpportunity(ref opportunity, item);
                         break;
                     case "lh_agency_name":
-                        var text = item.Text.Split("\r\n");
-                        agencyOfficeLocation.Agency = text[0];
-                        if (text.Length == 2)
-                            agencyOfficeLocation.Office = text[1];
-                        if (text.Length == 3)
-                            agencyOfficeLocation.Location = text[2];
+                        GetAgencyOfficeLocation(ref agencyOfficeLocation, item);
                         break;
                     case "lh_base_type":
                         post.Type = item.Text;
@@ -97,14 +90,21 @@ namespace WebScrapingRobot
             return post;
         }
 
-        private AgencyOfficeLocation GetAgencyOfficeLocation()
+        private static void GetAgencyOfficeLocation(ref AgencyOfficeLocation agencyOfficeLocation, IWebElement item)
         {
-            throw new NotImplementedException();
+            var text = item.Text.Split("\r\n");
+            agencyOfficeLocation.Agency = text[0];
+            if (text.Length == 2)
+                agencyOfficeLocation.Office = text[1];
+            if (text.Length == 3)
+                agencyOfficeLocation.Location = text[2];
         }
 
-        private Opportunity GetOpportunity()
+        private void GetOpportunity(ref Opportunity opportunity, IWebElement item)
         {
-            throw new NotImplementedException();
+            opportunity.Name = item.FindElement(By.ClassName("solt")).Text;
+            opportunity.SolicitationNumber = item.FindElement(By.ClassName("soln")).Text;
+            opportunity.Category = item.FindElement(By.ClassName("solcc")).Text;
         }
 
         public void MudarPagina(int i)
